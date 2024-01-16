@@ -1,0 +1,27 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1705405602344,
+      "tag": "0000_productive_changeling",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1705406282393,
+      "tag": "0001_wise_joshua_kane",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1705407510561,
+      "tag": "0002_brainy_retro_girl",
+      "breakpoints": true
+    }
+  ]
+}
