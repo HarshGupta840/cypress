@@ -18,6 +18,6 @@ export const migrateDb = async () => {
     console.log("🔴 error while migrating", error);
   }
 };
-// migrateDb();
+migrateDb();
 
 export default db;
