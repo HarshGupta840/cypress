@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,13 +11,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormSchema } from "@/lib/types";
-import { actionSignupUser } from "@/lib/server-action/auth-action";
+import { actionSignUpUser } from "@/lib/server-action/auth-action";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
+import Loader from "@/components/global/Loader";
+import clsx from "clsx";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { MailCheck } from "lucide-react";
 type Props = {};
 
 const SignupForm = z
@@ -39,7 +43,7 @@ const SignupForm = z
 
 const Signup = ({}: Props) => {
   const router = useRouter();
-
+  const searchParams = useSearchParams();
   const [submitError, setSubmitError] = useState("");
   const [confirmation, setConfirmation] = useState(false);
   const form = useForm<z.infer<typeof SignupForm>>({
@@ -48,8 +52,22 @@ const Signup = ({}: Props) => {
     defaultValues: { email: "", password: "", confirmPassword: "" },
   });
   const isLoading = form.formState.isSubmitting;
+
+  const codeExchangeError = useMemo(() => {
+    if (!searchParams) return "";
+    return searchParams.get("error_description");
+  }, [searchParams]);
+
+  const confirmationAndErrorStyle = useMemo(() => {
+    clsx("bg-primary", {
+      "bg-red-500/10": codeExchangeError,
+      "border-red-500/50": codeExchangeError,
+      "text-red-700": codeExchangeError,
+    });
+  }, [codeExchangeError]);
   const onSubmit = async ({ email, password }: z.infer<typeof FormSchema>) => {
-    const { error } = await actionSignupUser({ email, password });
+    console.log("calling the onsumbit fuction function");
+    const { error } = await actionSignUpUser({ email, password });
     if (error) {
       setSubmitError(error.message);
       form.reset();
@@ -139,6 +157,23 @@ const Signup = ({}: Props) => {
               </FormItem>
             )}
           />
+          <Button type="submit" className="w-full p-6" disabled={isLoading}>
+            {!isLoading ? "Create Account" : <Loader />}
+          </Button>
+
+          {(confirmation || codeExchangeError) && (
+            <>
+              <Alert className={`${confirmationAndErrorStyle}`}>
+                {!codeExchangeError && <MailCheck className="h-4 w-4" />}
+                <AlertTitle>
+                  {codeExchangeError ? "Invalid Link" : "Check your email."}
+                </AlertTitle>
+                <AlertDescription>
+                  {codeExchangeError || "An email confirmation has been sent."}
+                </AlertDescription>
+              </Alert>
+            </>
+          )}
         </form>
       </Form>
     </>

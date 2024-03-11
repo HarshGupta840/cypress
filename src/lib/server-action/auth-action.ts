@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { FormSchema } from "../types";
 import { cookies } from "next/headers";
+import { error } from "console";
 
 export const actionLoginUser = async ({
   email,
@@ -16,16 +17,20 @@ export const actionLoginUser = async ({
   return response;
 };
 
-export const actionSignupUser = async ({
+export async function actionSignUpUser({
   email,
   password,
-}: z.infer<typeof FormSchema>) => {
+}: z.infer<typeof FormSchema>) {
   const supabase = createRouteHandlerClient({ cookies });
   const { data } = await supabase
     .from("profiles")
     .select("*")
     .eq("email", email);
-  if (data?.length) return { error: { message: "User already exists", data } };
+
+  if (data?.length) {
+    console.log(data);
+    return { error: { message: "User already exists", data } };
+  }
   const response = await supabase.auth.signUp({
     email,
     password,
@@ -33,5 +38,6 @@ export const actionSignupUser = async ({
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}api/auth/callback`,
     },
   });
+  console.log(response, "here success");
   return response;
-};
+}
