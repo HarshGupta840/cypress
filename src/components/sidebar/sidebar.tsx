@@ -10,6 +10,7 @@ import {
 } from "@/lib/supabase/querries";
 import { redirect } from "next/navigation";
 import { twMerge } from "tailwind-merge";
+import WorkspaceDropdown from "./workspace-dropdown";
 
 type Props = {
   params: { workspaceId: string };
@@ -49,7 +50,21 @@ const Sidebar = async ({ params, className }: Props) => {
           "hidden sm:flex sm:flex-col w-[280px] shrink-0 p-4 md:gap-4 !justify-between",
           className
         )}
-      ></aside>
+      >
+        {" "}
+        <div>
+          <WorkspaceDropdown
+            collaboratingWokspace={collaboratingWorkspaces}
+            sharedWorkspace={sharedWorkspaces}
+            privateWorkspace={privateWorkspaces}
+            defaultValue={[
+              ...privateWorkspaces,
+              ...sharedWorkspaces,
+              ...collaboratingWorkspaces,
+            ].find((workspace) => workspace.id === params.workspaceId)}
+          />
+        </div>
+      </aside>
     </>
   );
 };
