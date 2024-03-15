@@ -1,8 +1,13 @@
 "use server";
-import { folders, users, workspaces } from "./../../../mirgation/schema";
+import {
+  collaborators,
+  folders,
+  users,
+  workspaces,
+} from "./../../../mirgation/schema";
 import { and, eq, notExists } from "drizzle-orm";
 import db from "./db";
-import { Folders, Subscription, Workspace } from "./supabase.types";
+import { Folders, Subscription, Users, Workspace } from "./supabase.types";
 import { collaborator } from "./schema";
 import { validate } from "uuid";
 import { error } from "console";
@@ -121,4 +126,16 @@ export const getSharedWorkspaces = async (userId: string) => {
     .innerJoin(collaborator, eq(collaborator.workspaceId, workspaces.id))
     .where(eq(workspaces.workspaceOwner, userId))) as Workspace[];
   return sharedWorkspace;
+};
+
+export const addCollaborators = async (users: Users[], workspaceId: string) => {
+  const response = users.forEach(async (user) => {
+    const userExist = await db.query.collaborators.findFirst({
+      where: (u, { eq }) =>
+        and(eq(eq(u.userId, user.id), eq(u.workspaceId, workspaceId))),
+    });
+    if (!userExist) {
+      await db.insert(collaborators).values({ workspaceId, userId: user.id });
+    }
+  });
 };

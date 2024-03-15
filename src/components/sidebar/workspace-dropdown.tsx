@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 import { Workspace } from "@/lib/supabase/supabase.types";
 import SelectWorkspace from "./selected-workspace";
+import CustomDialogTrigger from "../global/custom-dialogue-trigger";
+import WorkspaceCreator from "../global/wokspace-creator";
 
 type Props = {
   privateWorkspace: Workspace[] | [];
@@ -32,7 +34,7 @@ const WorkspaceDropdown = ({
 
   return (
     <>
-      <div className="relative inline-block text-left">
+      <div className="relative inline-block text-left w-full">
         <div>
           <span onClick={() => setisOpen(!isopen)}>
             {selectedOption ? (
@@ -49,11 +51,12 @@ const WorkspaceDropdown = ({
             rounded-md
             shadow-md
             z-50
-            h-[190px]
+            h-[220px]
             bg-black/10
             backdrop-blur-lg
             group
-            overflow-scroll
+            overflow-y-auto
+            overflow-x-hidden
             border-[1px]
             border-muted"
           >
@@ -99,6 +102,37 @@ const WorkspaceDropdown = ({
                   </>
                 )}
               </div>
+              <CustomDialogTrigger
+                header="Create A Workspace"
+                content={<WorkspaceCreator />}
+                description="Workspaces give you the power to collaborate with others. You can change your workspace privacy settings after creating the workspace too."
+              >
+                {" "}
+                <div
+                  className="flex
+            transition-all
+            hover:bg-muted
+            justify-center
+            items-center
+            gap-2
+            p-2
+            w-full"
+                >
+                  <article
+                    className="text-slate-500
+              rounded-full
+               bg-slate-800 
+               w-4 
+               h-4 
+               flex 
+               items-center 
+               justify-center"
+                  >
+                    +
+                  </article>
+                  Create workspace
+                </div>
+              </CustomDialogTrigger>
             </div>
           </div>
         )}

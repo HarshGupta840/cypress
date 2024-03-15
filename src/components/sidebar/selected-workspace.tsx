@@ -26,20 +26,20 @@ const SelectWorkspace = ({ workspace, onclick }: Props) => {
   return (
     <>
       <Link
-        href={`dashboard/${workspace.id}`}
+        href={`/dashboard/${workspace.id}`}
         onClick={() => {
           if (onclick) onclick(workspace);
         }}
-        className="flex 
-      rounded-md 
-      hover:bg-muted 
-      transition-all 
-      flex-row 
-      p-2 
-      gap-4 
-      justify-center 
-      cursor-pointer 
-      items-center 
+        className="flex
+      rounded-md
+      hover:bg-muted
+      transition-all
+      flex-row
+      p-2
+      gap-4
+      justify-center
+      cursor-pointer
+      items-center
       my-2"
       >
         <Image
