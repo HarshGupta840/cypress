@@ -16,6 +16,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Users } from "@/lib/supabase/supabase.types";
+import { getUsersFromSearch } from "@/lib/supabase/querries";
 
 type Props = {
   existingCollaborators: Users[] | [];
@@ -38,10 +39,10 @@ const CollaboratorSearch = ({
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (timerRef) clearTimeout(timerRef.current);
-    // timerRef.current = setTimeout(async () => {
-    //   const res = await getUsersFromSearch(e.target.value);
-    //   setSearchResults(res);
-    // }, 450);
+    timerRef.current = setTimeout(async () => {
+      const res = await getUsersFromSearch(e.target.value);
+      setSearchResults(res);
+    }, 450);
   };
   const addCollaborator = (user: Users) => {
     getCollaborator(user);
@@ -77,7 +78,7 @@ const CollaboratorSearch = ({
           </SheetHeader>
           <ScrollArea
             className="mt-6
-        overflow-y-scroll
+        overflow-y-auto
         w-full
         rounded-md
       "

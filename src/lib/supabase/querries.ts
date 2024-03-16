@@ -5,7 +5,7 @@ import {
   users,
   workspaces,
 } from "./../../../mirgation/schema";
-import { and, eq, notExists } from "drizzle-orm";
+import { and, eq, ilike, notExists } from "drizzle-orm";
 import db from "./db";
 import { Folders, Subscription, Users, Workspace } from "./supabase.types";
 import { collaborator } from "./schema";
@@ -138,4 +138,13 @@ export const addCollaborators = async (users: Users[], workspaceId: string) => {
       await db.insert(collaborators).values({ workspaceId, userId: user.id });
     }
   });
+};
+
+export const getUsersFromSearch = async (email: string) => {
+  if (!email) return [];
+  const accounts = db
+    .select()
+    .from(users)
+    .where(ilike(users.email, `${email}%`));
+  return accounts;
 };
