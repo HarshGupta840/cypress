@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "./styles.module.css";
 
 type Props = {
   params: { workspaceId: string };

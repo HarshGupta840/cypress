@@ -28,7 +28,7 @@ const Dashboard = async ({}: Props) => {
         <Dashboardsetup user={user} subscription={subscription} />
       </div>
     );
-  redirect(`/dashoard/${workspace.id}`);
+  redirect(`/dashboard/${workspace.id}`);
 };
 
 export default Dashboard;

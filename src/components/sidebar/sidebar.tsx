@@ -11,6 +11,9 @@ import {
 import { redirect } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 import WorkspaceDropdown from "./workspace-dropdown";
+import PlanUsage from "./plan-usage";
+import NativeNavigation from "./native-navigation";
+import { ScrollArea } from "../ui/scroll-area";
 
 type Props = {
   params: { workspaceId: string };
@@ -47,12 +50,12 @@ const Sidebar = async ({ params, className }: Props) => {
     <>
       <aside
         className={twMerge(
-          "hidden sm:flex sm:flex-col w-[280px] shrink-0 p-3 md:gap-4 !justify-between",
+          "hidden sm:flex sm:flex-col w-[280px] shrink-0 p-3 md:gap-6 !justify-between",
           className
         )}
       >
         {" "}
-        <div>
+        <div className="flex flex-col gap-4">
           <WorkspaceDropdown
             collaboratingWokspace={collaboratingWorkspaces}
             sharedWorkspace={sharedWorkspaces}
@@ -63,6 +66,27 @@ const Sidebar = async ({ params, className }: Props) => {
               ...collaboratingWorkspaces,
             ].find((workspace) => workspace.id === params.workspaceId)}
           />
+          <PlanUsage
+            foldersLength={workspaceFolderData?.length || 0}
+            subscription={subscriptionData}
+          />
+          <NativeNavigation myWorkspaceId={params.workspaceId} />
+          <ScrollArea
+            className="overflow-scroll relative
+          h-[450px]"
+          >
+            <div
+              className="pointer-events-none 
+          w-full 
+          absolute 
+          bottom-0 
+          h-20 
+          bg-gradient-to-t 
+          from-background 
+          to-transparent 
+          z-40"
+            />
+          </ScrollArea>
         </div>
       </aside>
     </>

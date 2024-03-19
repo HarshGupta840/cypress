@@ -23,6 +23,7 @@ import { v4 } from "uuid";
 import { createWorkspace } from "@/lib/supabase/querries";
 import Emojipicker from "../global/emoji-picker";
 import { AuthUser } from "@supabase/supabase-js";
+import { useAppState } from "@/lib/provider/state-provider";
 type Props = {
   user: AuthUser;
   subscription: Subscription | null;
@@ -31,7 +32,7 @@ type Props = {
 const Dashboardsetup = ({ user, subscription }: Props) => {
   const { toast } = useToast();
   const router = useRouter();
-  // const { dispatch } = useAppState();
+  const { dispatch } = useAppState();
   const [selectedEmoji, setSelectedEmoji] = useState("💼");
   const supabase = createClientComponentClient();
   const {
@@ -90,6 +91,10 @@ const Dashboardsetup = ({ user, subscription }: Props) => {
         if (createError) {
           throw new Error();
         }
+        dispatch({
+          type: "ADD_WORKSPACE",
+          payload: { ...newWorkspace, folders: [] },
+        });
         toast({
           title: "Workspace Created",
           description: `${newWorkspace.title} has been created successfully.`,

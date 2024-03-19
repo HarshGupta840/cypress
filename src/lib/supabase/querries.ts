@@ -67,8 +67,8 @@ export const getPrivateWorkspace = async (userId: string) => {
   }
 };
 
-export const getFolder = async (userId: string) => {
-  const isValid = validate(userId);
+export const getFolder = async (workspaceId: string) => {
+  const isValid = validate(workspaceId);
   if (!isValid)
     return {
       data: null,
@@ -80,7 +80,7 @@ export const getFolder = async (userId: string) => {
       .select()
       .from(folders)
       .orderBy(folders.createdAt)
-      .where(eq(folders.workspaceId, userId));
+      .where(eq(folders.workspaceId, workspaceId));
     return { data: result, error: null };
   } catch (error) {
     return { data: null, error: error };
