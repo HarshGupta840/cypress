@@ -86,6 +86,14 @@ export const getFolder = async (workspaceId: string) => {
     return { data: null, error: error };
   }
 };
+export const createFolder = async (folder: Folders) => {
+  try {
+    const results = await db.insert(folders).values(folder);
+    return { data: null, error: null };
+  } catch (error) {
+    return { data: null, error: "Error" };
+  }
+};
 export const getCollaboratingWorkspaces = async (userId: string) => {
   if (!userId) return [];
   const collaboratedWorkspaces = (await db

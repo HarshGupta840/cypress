@@ -158,8 +158,8 @@ export const files = pgTable("files", {
     .notNull(),
   title: text("title").notNull(),
   iconId: text("icon_id").notNull(),
-  data: text("data").notNull(),
-  inTrash: text("in_trash").notNull(),
+  data: text("data"),
+  inTrash: text("in_trash"),
   logo: text("logo"),
   bannerUrl: text("banner_url"),
   workspaceId: uuid("workspace_id").references(() => workspaces.id, {
@@ -186,8 +186,8 @@ export const workspaces = pgTable("workspaces", {
   workspaceOwner: uuid("workspace_owner").notNull(),
   title: text("title").notNull(),
   iconId: text("icon_id").notNull(),
-  data: text("data").notNull(),
-  inTrash: text("in_trash").notNull(),
+  data: text("data"),
+  inTrash: text("in_trash"),
   logo: text("logo"),
   bannerUrl: text("banner_url"),
 });
@@ -199,8 +199,8 @@ export const folders = pgTable("folders", {
     .notNull(),
   title: text("title").notNull(),
   iconId: text("icon_id").notNull(),
-  data: text("data").notNull(),
-  inTrash: text("in_trash").notNull(),
+  data: text("data"),
+  inTrash: text("in_trash"),
   logo: text("logo"),
   bannerUrl: text("banner_url"),
   workspaceId: uuid("workspace_id").references(() => workspaces.id, {
