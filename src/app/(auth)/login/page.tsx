@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { FormSchema } from "@/lib/types";
@@ -27,7 +27,9 @@ type Props = {};
 const Login = ({}: Props) => {
   const router = useRouter();
   const [submitError, setSubmitError] = useState("");
+
   const form = useForm<z.infer<typeof FormSchema>>({
+    mode: "onChange",
     resolver: zodResolver(FormSchema),
     defaultValues: {
       email: "",
@@ -38,10 +40,12 @@ const Login = ({}: Props) => {
   const onSubmit: SubmitHandler<z.infer<typeof FormSchema>> = async (
     formData
   ) => {
-    const data = await actionLoginUser(formData);
-    if (data.error) {
+    console.log("signin called");
+    const { data, error } = await actionLoginUser(formData);
+    if (error) {
       form.reset();
-      setSubmitError(data?.error);
+      console.log("error encountered");
+      setSubmitError(error.message);
     }
     router.replace("/dashboard");
   };
@@ -49,10 +53,10 @@ const Login = ({}: Props) => {
     <>
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
           onChange={() => {
             if (submitError) setSubmitError("");
           }}
+          onSubmit={form.handleSubmit(onSubmit)}
           className="w-full sm:w-[500px] space-y-6 flex flex-col justify-center mx-auto"
         >
           <Link
@@ -63,12 +67,6 @@ const Login = ({}: Props) => {
           justify-left
           items-center"
           >
-            {/* <Image
-            src={Logo}
-            alt="cypress Logo"
-            width={50}
-            height={50}
-          /> */}
             <span
               className="font-semibold
           dark:text-white text-4xl first-letter:ml-2"

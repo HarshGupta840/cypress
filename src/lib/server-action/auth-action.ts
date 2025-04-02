@@ -9,16 +9,27 @@ export async function actionLoginUser({
   email,
   password,
 }: z.infer<typeof FormSchema>) {
-  const supabase = createRouteHandlerClient({ cookies });
-  const { data, error } = await supabase.auth.signInWithPassword({
+  console.log("✅login called");
+  const cookieStore = cookies();
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+  const response = await supabase.auth.signInWithPassword({
     email,
     password,
   });
-  if (error) {
-    console.error("Login failed:", error.message);
-    return { success: false, error: error.message };
+  console.log(response);
+  if (response.data.session) {
+    console.log("setting auth");
+    const res = await supabase.auth.setSession({
+      access_token: response?.data?.session.access_token,
+      refresh_token: response?.data?.session.refresh_token,
+    });
+    if (res) {
+      console.log("token updated", res);
+    }
+  } else {
+    console.error("Login failed:", error);
   }
-  return { data };
+  return response;
 }
 
 export async function actionSignUpUser({
@@ -44,12 +55,4 @@ export async function actionSignUpUser({
   });
   console.log(response, "here success");
   return response;
-}
-
-export async function actionSignOutUser() {
-  const supabase = createRouteHandlerClient({ cookies });
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    console.log("not able to signout");
-  }
 }

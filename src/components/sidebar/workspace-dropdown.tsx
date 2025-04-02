@@ -6,6 +6,7 @@ import { Workspace } from "@/lib/supabase/supabase.types";
 import SelectWorkspace from "./selected-workspace";
 import CustomDialogTrigger from "../global/custom-dialogue-trigger";
 import WorkspaceCreator from "../global/wokspace-creator";
+import { useAppState } from "@/lib/provider/state-provider";
 
 type Props = {
   privateWorkspace: Workspace[] | [];
@@ -20,13 +21,24 @@ const WorkspaceDropdown = ({
   collaboratingWokspace,
   defaultValue,
 }: Props) => {
+  const { dispatch, state } = useAppState();
   const [isopen, setisOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(defaultValue);
-  useEffect(() => {}, [
-    privateWorkspace,
-    sharedWorkspace,
-    collaboratingWokspace,
-  ]);
+  useEffect(() => {
+    console.log("this is callingmultiple time");
+    if (!state.workspace.length) {
+      dispatch({
+        type: "SET_WORKSPACE",
+        payload: {
+          workspaces: [
+            ...privateWorkspace,
+            ...sharedWorkspace,
+            ...collaboratingWokspace,
+          ].map((workspace) => ({ ...workspace, folders: [] })),
+        },
+      });
+    }
+  }, [privateWorkspace, sharedWorkspace, collaboratingWokspace]);
   const handleSelect = (option: Workspace) => {
     setSelectedOption(option);
     setisOpen(false);

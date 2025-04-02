@@ -246,7 +246,8 @@ const AppStateProvider = ({ children }: Props) => {
         payload: { workspaceId, files: data, folderId },
       });
     };
-  });
+    fetchFile();
+  }, [folderId, workspaceId]);
   useEffect(() => {
     console.log("App State Changed", state);
   }, [state]);
