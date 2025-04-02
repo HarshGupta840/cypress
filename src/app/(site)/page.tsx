@@ -66,7 +66,7 @@ const Homepage = ({}: Props) => {
 
       <section className="relative">
         <div
-          className="overflow-hidden flex 
+          className="overflow-hidden flex
           after:content['']
           after:dark:from-brand-dark
           after:to-transparent

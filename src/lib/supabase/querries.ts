@@ -1,13 +1,20 @@
 "use server";
 import {
   collaborators,
+  files,
   folders,
   users,
   workspaces,
 } from "./../../../mirgation/schema";
 import { and, eq, ilike, notExists } from "drizzle-orm";
 import db from "./db";
-import { Folders, Subscription, Users, Workspace } from "./supabase.types";
+import {
+  Files,
+  Folders,
+  Subscription,
+  Users,
+  Workspace,
+} from "./supabase.types";
 import { collaborator } from "./schema";
 import { validate } from "uuid";
 import { error } from "console";
@@ -157,3 +164,44 @@ export const getUsersFromSearch = async (email: string) => {
   return accounts;
 };
 //commets
+export const getFiles = async (folderId: string) => {
+  const isValid = validate(folderId);
+  if (!isValid) return { data: null, error: "Error" };
+  try {
+    const results = (await db
+      .select()
+      .from(files)
+      .orderBy(files.createdAt)
+      .where(eq(files.folderId, folderId))) as Files[] | [];
+    return { data: results, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: "Error" };
+  }
+};
+
+export const updateFolder = async (
+  folder: Partial<Folders>,
+  folderID: string
+) => {
+  try {
+    await db.update(folders).set(folder).where(eq(folders.id, folderID));
+    return { data: null, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: "Error" };
+  }
+};
+
+export const updateFile = async (file: Partial<Files>, fileId: string) => {
+  try {
+    const response = await db
+      .update(files)
+      .set(file)
+      .where(eq(files.id, fileId));
+    return { data: null, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: "Error" };
+  }
+};

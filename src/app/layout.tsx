@@ -19,7 +19,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // db;
+  db;
   return (
     <html lang="en">
       <body className={inter.className}>

@@ -10,6 +10,7 @@ import { createFolder } from "@/lib/supabase/querries";
 import { PlusIcon } from "lucide-react";
 import TooltipComponent from "../global/tooltip-component";
 import { Accordion } from "../ui/accordion";
+import Dropdown from "./dropdown";
 
 type Props = {
   workspaceFolders: Folders[];

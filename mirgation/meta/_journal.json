@@ -50,6 +50,13 @@
       "when": 1710913260074,
       "tag": "0006_tranquil_red_hulk",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1733851598034,
+      "tag": "0007_tearful_bastion",
+      "breakpoints": true
     }
   ]
 }

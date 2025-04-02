@@ -83,7 +83,7 @@ const Signup = ({}: Props) => {
           onChange={() => {
             if (submitError) setSubmitError("");
           }}
-          className="w-full sm:w-[500px] flex flex-col justify-center gap-y-6"
+          className="w-full sm:w-[500px] space-y-6 flex flex-col justify-center mx-auto my-auto"
         >
           <Link
             href="/"
