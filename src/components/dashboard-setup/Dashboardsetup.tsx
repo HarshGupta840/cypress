@@ -51,6 +51,7 @@ const Dashboardsetup = ({ user, subscription }: Props) => {
   const onSubmit: SubmitHandler<
     z.infer<typeof createWorkspaceFormSchema>
   > = async (value) => {
+    console.log(value);
     const file = value.logo?.[0];
     let filePath = null;
     const workspaceUUID = v4();
@@ -58,7 +59,7 @@ const Dashboardsetup = ({ user, subscription }: Props) => {
     if (file) {
       try {
         const { data, error } = await supabase.storage
-          .from("cypress")
+          .from("workspace-logos")
           .upload(`workspaceLogo.${workspaceUUID}`, file, {
             upsert: true,
             cacheControl: "3600",

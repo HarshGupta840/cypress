@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
+import { actionSignOutUser } from "./lib/server-action/auth-action";
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(req: NextRequest) {
@@ -34,6 +35,8 @@ export async function middleware(req: NextRequest) {
 
   if (["/login", "/signup"].includes(req.nextUrl.pathname)) {
     if (session) {
+      actionSignOutUser();
+      // console.log(session);
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
   }

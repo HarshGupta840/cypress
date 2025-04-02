@@ -18,8 +18,9 @@ const SelectWorkspace = ({ workspace, onclick }: Props) => {
   const [workSpaceLogo, setWorkSpaceLogo] = useState("/cypresslogo.svg");
   useEffect(() => {
     if (workspace.logo) {
-      const path = supabase.storage.from("cypress").getPublicUrl(workspace.logo)
-        ?.data.publicUrl;
+      const path = supabase.storage
+        .from("workspace-logos")
+        .getPublicUrl(workspace.logo)?.data.publicUrl;
       setWorkSpaceLogo(path);
     }
   }, [workspace]);

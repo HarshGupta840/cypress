@@ -5,17 +5,21 @@ import { FormSchema } from "../types";
 import { cookies } from "next/headers";
 import { error } from "console";
 
-export const actionLoginUser = async ({
+export async function actionLoginUser({
   email,
   password,
-}: z.infer<typeof FormSchema>) => {
+}: z.infer<typeof FormSchema>) {
   const supabase = createRouteHandlerClient({ cookies });
-  const response = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
-  return response;
-};
+  if (error) {
+    console.error("Login failed:", error.message);
+    return { success: false, error: error.message };
+  }
+  return { data };
+}
 
 export async function actionSignUpUser({
   email,
@@ -40,4 +44,12 @@ export async function actionSignUpUser({
   });
   console.log(response, "here success");
   return response;
+}
+
+export async function actionSignOutUser() {
+  const supabase = createRouteHandlerClient({ cookies });
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.log("not able to signout");
+  }
 }

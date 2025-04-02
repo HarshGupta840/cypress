@@ -38,10 +38,10 @@ const Login = ({}: Props) => {
   const onSubmit: SubmitHandler<z.infer<typeof FormSchema>> = async (
     formData
   ) => {
-    const { error } = await actionLoginUser(formData);
-    if (error) {
+    const data = await actionLoginUser(formData);
+    if (data.error) {
       form.reset();
-      setSubmitError(error.message);
+      setSubmitError(data?.error);
     }
     router.replace("/dashboard");
   };
