@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { Folders } from "@/lib/supabase/supabase.types";
 import { useToast } from "../ui/use-toast";
@@ -61,7 +60,6 @@ const FolderDropDown = ({ workspaceFolders, workspaceId }: Props) => {
       inTrash: null,
       workspaceId,
       bannerUrl: "",
-      logo: "",
     };
 
     dispatch({
@@ -108,7 +106,7 @@ const FolderDropDown = ({ workspaceFolders, workspaceId }: Props) => {
         <TooltipComponent message="Create Folder">
           <PlusIcon
             onClick={addFolderHandler}
-            size={16}
+            size={17}
             className="group-hover/title:inline-block
             hidden 
             cursor-pointer
@@ -116,24 +114,24 @@ const FolderDropDown = ({ workspaceFolders, workspaceId }: Props) => {
           "
           />
         </TooltipComponent>
-        <Accordion
-          type="multiple"
-          defaultValue={[folderId || ""]}
-          className="pb-20"
-        >
-          {folders
-            .filter((folder) => !folder.inTrash)
-            .map((folder) => (
-              <Dropdown
-                key={folder.id}
-                title={folder.title}
-                listType="folder"
-                id={folder.id}
-                iconId={folder.iconId}
-              />
-            ))}
-        </Accordion>
       </div>
+      <Accordion
+        type="multiple"
+        defaultValue={[folderId || ""]}
+        className="pb-20"
+      >
+        {folders
+          .filter((folder) => !folder.inTrash)
+          .map((folder) => (
+            <Dropdown
+              key={folder.id}
+              title={folder.title}
+              listType="folder"
+              id={folder.id}
+              iconId={folder.iconId}
+            />
+          ))}
+      </Accordion>
     </>
   );
 };

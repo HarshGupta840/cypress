@@ -54,6 +54,10 @@ type Action =
         folderId: string;
         fileId: string;
       };
+    }
+  | {
+      type: "ADD_FILE";
+      payload: { workspaceId: string; files: Files; folderId: string };
     };
 
 const initialState: AppState = { workspace: [] };
@@ -115,10 +119,12 @@ const appReducer = (
               ...action.payload.workspace,
             };
           }
+          console.log("folder is updated from the state providor");
           return workspace;
         }),
       };
     case "SET_FILES":
+      console.log("files are setting as ", action.payload);
       return {
         ...state,
         workspace: state.workspace.map((workspace) => {
@@ -130,6 +136,31 @@ const appReducer = (
                   return {
                     ...folder,
                     files: action.payload.files,
+                  };
+                }
+                return folder;
+              }),
+            };
+          }
+          return workspace;
+        }),
+      };
+    case "ADD_FILE":
+      return {
+        ...state,
+        workspace: state.workspace.map((workspace) => {
+          if (workspace.id === action.payload.workspaceId) {
+            return {
+              ...workspace,
+              folders: workspace.folders.map((folder) => {
+                if (folder.id === action.payload.folderId) {
+                  return {
+                    ...folder,
+                    files: [...folder.files, action.payload.files].sort(
+                      (a, b) =>
+                        new Date(a.createdAt).getTime() -
+                        new Date(b.createdAt).getTime()
+                    ),
                   };
                 }
                 return folder;
@@ -235,6 +266,7 @@ const AppStateProvider = ({ children }: Props) => {
   }, [pathname]);
   useEffect(() => {
     if (!folderId || !workspaceId) return;
+    console.log("useeffect for the set file is caled");
     const fetchFile = async () => {
       const { error: filesError, data } = await getFiles(folderId);
       if (filesError) {

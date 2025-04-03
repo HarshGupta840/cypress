@@ -205,3 +205,11 @@ export const updateFile = async (file: Partial<Files>, fileId: string) => {
     return { data: null, error: "Error" };
   }
 };
+export const createFile = async (file: Files) => {
+  try {
+    await db.insert(files).values(file);
+    return { data: null, error: null };
+  } catch (error) {
+    return { data: null, error: "Error" };
+  }
+};

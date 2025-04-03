@@ -63,6 +63,7 @@ const WorkspaceCreator = ({}: Props) => {
         toast({ title: "Success", description: "Created the workspace" });
       }
     }
+    setIsLoading(false);
   };
   return (
     <>
@@ -208,7 +209,9 @@ const WorkspaceCreator = ({}: Props) => {
         variant={"secondary"}
         className="mt-8"
         disabled={
-          !title || (permissions === "shared" && collaborator.length === 0)
+          !title ||
+          (permissions === "shared" && collaborator.length === 0) ||
+          isLoading
         }
         onClick={createItem}
       >

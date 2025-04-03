@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/lib/provider/next-theme-provider";
 import { SupabaseUserProvider } from "@/lib/provider/supabase-user-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import AppStateProvider from "@/lib/provider/state-provider";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,7 +28,7 @@ export default function RootLayout({
           <AppStateProvider>
             <SupabaseUserProvider>
               {children}
-              <ToastProvider />
+              <Toaster />
             </SupabaseUserProvider>
           </AppStateProvider>
         </ThemeProvider>

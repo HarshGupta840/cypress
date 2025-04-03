@@ -45,7 +45,7 @@ export const SupabaseUserProvider = ({ children }: Props) => {
   };
   useEffect(() => {
     getAuth();
-  }, [supabase]);
+  }, [supabase, toast]);
   return (
     <SupabaseUserContext.Provider value={{ user, subscription }}>
       {children}

@@ -52,7 +52,6 @@ export type Database = {
           icon_id: string;
           id: string;
           in_trash: string;
-          logo: string | null;
           title: string;
           workspace_id: string | null;
         };
@@ -64,7 +63,6 @@ export type Database = {
           icon_id: string;
           id?: string;
           in_trash: string;
-          logo?: string | null;
           title: string;
           workspace_id?: string | null;
         };
@@ -76,7 +74,6 @@ export type Database = {
           icon_id?: string;
           id?: string;
           in_trash?: string;
-          logo?: string | null;
           title?: string;
           workspace_id?: string | null;
         };
@@ -105,7 +102,6 @@ export type Database = {
           icon_id: string;
           id: string;
           in_trash: string;
-          logo: string | null;
           title: string;
           workspace_id: string | null;
         };
@@ -116,7 +112,6 @@ export type Database = {
           icon_id: string;
           id?: string;
           in_trash: string;
-          logo?: string | null;
           title: string;
           workspace_id?: string | null;
         };
@@ -127,7 +122,6 @@ export type Database = {
           icon_id?: string;
           id?: string;
           in_trash?: string;
-          logo?: string | null;
           title?: string;
           workspace_id?: string | null;
         };

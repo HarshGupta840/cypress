@@ -4,6 +4,7 @@ import { Subscription } from "@/lib/supabase/supabase.types";
 import { useAppState } from "@/lib/provider/state-provider";
 import { MAX_FOLDERS_FREE_PLAN } from "@/lib/constant";
 import { Progress } from "../ui/progress";
+import DiamondIcon from "../icons/diamond";
 
 type Props = {
   foldersLength: number;
@@ -27,12 +28,15 @@ const PlanUsage = ({ foldersLength, subscription }: Props) => {
       <article className="mt-4">
         <div
           className="flex 
+          justify-center
           gap-2
           text-muted-foreground
           mb-2
-          items-cente"
+          items-center"
         >
-          <div className="h-4 w-4">{/* <CypressDiamondIcon /> */}d</div>
+          <div className="h-4 w-4">
+            <DiamondIcon />{" "}
+          </div>
           <div className="flex justify-between items-center w-full">
             <div>Free Plan</div>
             <small>{usagePercentage.toFixed(0)}%/100%</small>
