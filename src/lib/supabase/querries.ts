@@ -18,6 +18,7 @@ import {
 import { collaborator } from "./schema";
 import { validate } from "uuid";
 import { error } from "console";
+import { revalidatePath } from "next/cache";
 
 export const createWorkspace = async (workspace: Workspace) => {
   try {
@@ -202,6 +203,22 @@ export const updateFile = async (file: Partial<Files>, fileId: string) => {
     return { data: null, error: null };
   } catch (error) {
     console.log(error);
+    return { data: null, error: "Error" };
+  }
+};
+export const updateWorkspace = async (
+  workspace: Partial<Workspace>,
+  workspaceId: string
+) => {
+  if (!workspaceId) return;
+  try {
+    await db
+      .update(workspaces)
+      .set(workspace)
+      .where(eq(workspaces.id, workspaceId));
+    revalidatePath(`/dashboard/${workspaceId}`);
+    return { data: null, error: null };
+  } catch (error) {
     return { data: null, error: "Error" };
   }
 };

@@ -1,14 +1,15 @@
-import React from "react";
-import styles from "./styles.module.css";
+"use client";
+import React, { useRef, useState } from "react";
 
 type Props = {};
 
 const FolderId = ({}: Props) => {
   return (
     <>
-      <div>folder</div>
+      <div>folder </div>
     </>
   );
 };
 
 export default FolderId;
+f;
