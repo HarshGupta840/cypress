@@ -97,10 +97,16 @@ const Dropdown = ({
   // Navigate the user to the different pages
   const navigatePage = async (accordianId: string, list: string) => {
     if (list === "folder") {
-      router.push(`/dashboard/${workspaceId}/${accordianId}`);
+      router.push(
+        `/dashboard/${workspaceId}/${accordianId.split("folder")[0]}`
+      );
     }
     if (list === "file") {
-      // router.push(`/dashboard/${workspaceId}/${folderId}/${accordianId}`);
+      router.push(
+        `/dashboard/${workspaceId}/${accordianId.split("folder")[0]}/${
+          accordianId.split("folder")[1]
+        }`
+      );
     }
   };
 

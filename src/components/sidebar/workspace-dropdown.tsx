@@ -43,6 +43,12 @@ const WorkspaceDropdown = ({
     setSelectedOption(option);
     setisOpen(false);
   };
+  useEffect(() => {
+    const findSelectedWorkspace = state.workspace.find(
+      (workspace) => workspace.id === defaultValue?.id
+    );
+    if (findSelectedWorkspace) setSelectedOption(findSelectedWorkspace);
+  }, [state, defaultValue]);
 
   return (
     <>

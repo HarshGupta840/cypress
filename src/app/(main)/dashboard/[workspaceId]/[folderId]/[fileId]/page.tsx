@@ -5,11 +5,11 @@ import { redirect } from "next/navigation";
 import React from "react";
 
 type Props = {
-  params: { folderId: string };
+  params: { fileId: string };
 };
 
-const Folder = async ({ params }: Props) => {
-  const { error, data } = await getFolderDetails(params.folderId);
+const File = async ({ params }: Props) => {
+  const { error, data } = await getFileDetails(params.fileId);
   if (error || !data.length) {
     // redirect("/dashboard");
   }
@@ -17,8 +17,8 @@ const Folder = async ({ params }: Props) => {
     <>
       <div className="relative">
         <Editor
-          fileId={params.folderId}
-          dirType="folder"
+          fileId={params.fileId}
+          dirType="file"
           dirDetails={data[0] || {}}
         />
       </div>
@@ -26,4 +26,4 @@ const Folder = async ({ params }: Props) => {
   );
 };
 
-export default Folder;
+export default File;

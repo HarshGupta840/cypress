@@ -58,6 +58,18 @@ type Action =
   | {
       type: "ADD_FILE";
       payload: { workspaceId: string; files: Files; folderId: string };
+    }
+  | {
+      type: "DELETE_WORKSPACE";
+      payload: string;
+    }
+  | {
+      type: "DELETE_FILE";
+      payload: { workspaceId: string; folderId: string; fileId: string };
+    }
+  | {
+      type: "DELETE_FOLDER";
+      payload: { workspaceId: string; folderId: string };
     };
 
 const initialState: AppState = { workspace: [] };
@@ -110,6 +122,7 @@ const appReducer = (
         workspace: action.payload.workspaces,
       };
     case "UPDATE_WORKSPACE":
+      console.log("workspace isupdated");
       return {
         ...state,
         workspace: state.workspace.map((workspace) => {
@@ -171,6 +184,7 @@ const appReducer = (
         }),
       };
     case "UPDATE_FOLDER":
+      console.log("folder is updted");
       return {
         ...state,
         workspace: state.workspace.map((workspace) => {
@@ -189,6 +203,7 @@ const appReducer = (
         }),
       };
     case "UPDATE_FILES":
+      console.log("file is updaed");
       return {
         ...state,
         workspace: state.workspace.map((workspace) => {
@@ -208,6 +223,51 @@ const appReducer = (
                       }
                       return file;
                     }),
+                  };
+                }
+                return folder;
+              }),
+            };
+          }
+          return workspace;
+        }),
+      };
+    case "DELETE_WORKSPACE":
+      return {
+        ...state,
+        workspace: state.workspace.filter(
+          (workspace) => workspace.id !== action.payload
+        ),
+      };
+    case "DELETE_FILE":
+      return {
+        ...state,
+        workspace: state.workspace.map((workspace) => {
+          if (workspace.id === action.payload.workspaceId) {
+            return {
+              ...workspace,
+              folders: workspace.folders.filter(
+                (folder) => folder.id !== action.payload.folderId
+              ),
+            };
+          }
+          return workspace;
+        }),
+      };
+    case "DELETE_FILE":
+      return {
+        ...state,
+        workspace: state.workspace.map((workspace) => {
+          if (workspace.id === action.payload.workspaceId) {
+            return {
+              ...workspace,
+              folder: workspace.folders.map((folder) => {
+                if (folder.id === action.payload.folderId) {
+                  return {
+                    ...folder,
+                    files: folder.files.filter(
+                      (file) => file.id !== action.payload.fileId
+                    ),
                   };
                 }
                 return folder;
