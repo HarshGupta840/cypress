@@ -7,6 +7,7 @@ import { SupabaseUserProvider } from "@/lib/provider/supabase-user-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import AppStateProvider from "@/lib/provider/state-provider";
 import { Toaster } from "@/components/ui/toaster";
+import { SocketProvider } from "@/lib/provider/socket-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,7 +28,7 @@ export default function RootLayout({
         <ThemeProvider defaultTheme="dark" attribute="class" enableSystem>
           <AppStateProvider>
             <SupabaseUserProvider>
-              {children}
+              <SocketProvider>{children}</SocketProvider>
               <Toaster />
             </SupabaseUserProvider>
           </AppStateProvider>
