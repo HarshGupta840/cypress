@@ -125,7 +125,7 @@ export const collaborator = pgTable("collaborators", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   workspaceId: uuid("workspace_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => workspace.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at", {
     withTimezone: true,
     mode: "string",

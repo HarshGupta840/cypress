@@ -301,7 +301,7 @@ const AppStateProvider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
   const pathname = usePathname();
   const workspaceId = useMemo(() => {
-    const urlSegment = pathname.split("/").filter(Boolean);
+    const urlSegment = pathname?.split("/").filter(Boolean);
     if (urlSegment) {
       if (urlSegment.length > 1) {
         return urlSegment[1];
@@ -309,7 +309,7 @@ const AppStateProvider = ({ children }: Props) => {
     }
   }, [pathname]);
   const folderId = useMemo(() => {
-    const urlSegment = pathname.split("/").filter(Boolean);
+    const urlSegment = pathname?.split("/").filter(Boolean);
     if (urlSegment) {
       if (urlSegment.length > 2) {
         return urlSegment[2];
@@ -317,7 +317,7 @@ const AppStateProvider = ({ children }: Props) => {
     }
   }, [pathname]);
   const fileId = useMemo(() => {
-    const urlSegment = pathname.split("/").filter(Boolean);
+    const urlSegment = pathname?.split("/").filter(Boolean);
     if (urlSegment) {
       if (urlSegment.length > 3) {
         return urlSegment[3];

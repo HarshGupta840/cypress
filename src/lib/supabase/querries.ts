@@ -145,16 +145,17 @@ export const getSharedWorkspaces = async (userId: string) => {
 };
 
 export const addCollaborators = async (users: Users[], workspaceId: string) => {
-  const response = users.forEach(async (user) => {
-    const userExist = await db.query.collaborators.findFirst({
+  console.log("adding the collaborators");
+  const response = users.forEach(async (user: Users) => {
+    const userExists = await db.query.collaborators.findFirst({
       where: (u, { eq }) =>
-        and(eq(eq(u.userId, user.id), eq(u.workspaceId, workspaceId))),
+        and(eq(u.userId, user.id), eq(u.workspaceId, workspaceId)),
     });
-    if (!userExist) {
-      await db.insert(collaborators).values({ workspaceId, userId: user.id });
-    }
+    if (!userExists) console.log("added the collaborators");
+    await db.insert(collaborators).values({ workspaceId, userId: user.id });
   });
 };
+
 export const removeCollaborators = async (
   users: Users[],
   workspaceId: string
@@ -162,7 +163,7 @@ export const removeCollaborators = async (
   const response = users.forEach(async (user) => {
     const userExist = await db.query.collaborators.findFirst({
       where: (u, { eq }) =>
-        and(eq(eq(u.userId, user.id), eq(u.workspaceId, workspaceId))),
+        and(eq(u.userId, user.id), eq(u.workspaceId, workspaceId)),
     });
     if (userExist) {
       await db
@@ -200,7 +201,21 @@ export const getFiles = async (folderId: string) => {
     return { data: null, error: "Error" };
   }
 };
-
+export const getCollaborators = async (workspaceId: string) => {
+  const res = await db
+    .select()
+    .from(collaborators)
+    .where(eq(collaborators.workspaceId, workspaceId));
+  if (!res.length) return [];
+  const userInfo: Promise<Users | undefined>[] = res.map(async (user) => {
+    const exist = await db.query.users.findFirst({
+      where: (u, { eq }) => eq(u.id, user.userId),
+    });
+    return exist;
+  });
+  const resolveuser = await Promise.all(userInfo);
+  return resolveuser.filter(Boolean) as Users[];
+};
 export const updateFolder = async (
   folder: Partial<Folders>,
   folderID: string
@@ -318,4 +333,11 @@ export const deleteFile = async (fileId: string) => {
 export const deleteFolder = async (folderId: string) => {
   if (!folderId) return;
   await db.delete(files).where(eq(files.id, folderId));
+};
+
+export const findUser = async (userId: string) => {
+  const response = await db.query.users.findFirst({
+    where: (u, { eq }) => eq(u.id, userId),
+  });
+  return response;
 };

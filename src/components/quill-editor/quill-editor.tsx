@@ -14,6 +14,7 @@ import { Button } from "../ui/button";
 import {
   deleteFile,
   deleteFolder,
+  findUser,
   getFileDetails,
   getFolderDetails,
   getWorkspaceDetails,
@@ -77,6 +78,7 @@ const Editor = ({ dirDetails, dirType, fileId }: Props) => {
   const [collaborators, setCollaborators] = useState<
     { id: string; email: string; avatarUrl: string }[]
   >([]);
+  const [localCursors, setLocalCursors] = useState<any>([]);
   const [deletingBanner, setDeletingBanner] = useState(false);
   //to give details
   const details = useMemo(() => {
@@ -120,8 +122,8 @@ const Editor = ({ dirDetails, dirType, fileId }: Props) => {
       const editor = document.createElement("div");
       wrapper.append(editor);
       const Quill = (await import("quill")).default;
-      //   const QuillCursors = (await import('quill-cursors')).default;
-      //   Quill.register('modules/cursors', QuillCursors);
+      const QuillCursors = (await import("quill-cursors")).default;
+      Quill.register("modules/cursors", QuillCursors);
       const q = new Quill(editor, {
         theme: "snow",
         modules: {
@@ -284,63 +286,63 @@ const Editor = ({ dirDetails, dirType, fileId }: Props) => {
   //use effect for getting the data from the server
   useEffect(() => {
     if (!fileId) return;
-    let selectedDir;
+    let selectedDi;
     const fetchInformation = async () => {
       if (dirType === "file") {
-        const { data: selectedDir, error } = await getFileDetails(fileId);
-        if (error || !selectedDir) {
+        const { data: selectedDi, error } = await getFileDetails(fileId);
+        if (error || !selectedDi) {
           return router.replace("/dashboard");
         }
-        if (!selectedDir[0]) {
+        if (!selectedDi[0]) {
           if (!workspaceId) return;
           return router.replace(`/dashboard/${workspaceId}`);
         }
         if (!workspaceId || quill === null) return;
-        if (!selectedDir[0].data) return;
-        quill.setContents(JSON.parse(selectedDir[0].data || ""));
+        if (!selectedDi[0].data) return;
+        quill.setContents(JSON.parse(selectedDi[0].data || ""));
         dispatch({
           type: "UPDATE_FILES",
           payload: {
-            files: { data: selectedDir[0].data },
+            files: { data: selectedDi[0].data },
             fileId,
-            folderId: selectedDir[0].folderId,
+            folderId: selectedDi[0].folderId,
             workspaceId,
           },
         });
       }
       if (dirType === "folder") {
-        const { data: selectedDir, error } = await getFolderDetails(fileId);
-        if (error || !selectedDir) {
+        const { data: selectedDi, error } = await getFolderDetails(fileId);
+        if (error || !selectedDi) {
           return router.replace("/dashboard");
         }
 
-        if (!selectedDir[0]) {
+        if (!selectedDi[0]) {
           router.replace(`/dashboard/${workspaceId}`);
         }
         if (quill === null) return;
-        if (!selectedDir[0].data) return;
-        quill.setContents(JSON.parse(selectedDir[0].data || ""));
+        if (!selectedDi[0].data) return;
+        quill.setContents(JSON.parse(selectedDi[0].data || ""));
         dispatch({
           type: "UPDATE_FOLDER",
           payload: {
             folderId: fileId,
-            folder: { data: selectedDir[0].data },
-            workspaceId: selectedDir[0].workspaceId,
+            folder: { data: selectedDi[0].data },
+            workspaceId: selectedDi[0].workspaceId,
           },
         });
       }
       if (dirType === "workspace") {
-        const { data: selectedDir, error } = await getWorkspaceDetails(fileId);
-        if (error || !selectedDir) {
+        const { data: selectedDi, error } = await getWorkspaceDetails(fileId);
+        if (error || !selectedDi) {
           return router.replace("/dashboard");
         }
-        if (!selectedDir[0] || quill === null) return;
-        if (!selectedDir[0].data) return;
-        quill.setContents(JSON.parse(selectedDir[0].data || ""));
+        if (!selectedDi[0] || quill === null) return;
+        if (!selectedDi[0].data) return;
+        quill.setContents(JSON.parse(selectedDi[0].data || ""));
         dispatch({
           type: "UPDATE_WORKSPACE",
           payload: {
-            workspace: { data: selectedDir[0].data },
+            workspace: { data: selectedDi[0].data },
             workspaceId: fileId,
           },
         });
@@ -422,6 +424,64 @@ const Editor = ({ dirDetails, dirType, fileId }: Props) => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
   }, [quill, socket, fileId, user, details, folderId, workspaceId, dispatch]);
+
+  useEffect(() => {
+    if (quill === null || socket === null) return;
+    const socketHandler = (deltas: any, id: string) => {
+      if (id === fileId) {
+        quill.updateContents(deltas);
+      }
+    };
+    socket.on("receive-changes", socketHandler);
+    return () => {
+      socket.off("receive-changes", socketHandler);
+    };
+  }, [quill, socket, fileId]);
+
+  useEffect(() => {
+    if (!fileId || quill === null) return;
+    const room = supabase.channel(fileId);
+    const subscription = room
+      .on("presence", { event: "sync" }, () => {
+        const newState = room.presenceState();
+        const newCollaborators = Object.values(newState).flat() as any;
+        setCollaborators(newCollaborators);
+        if (user) {
+          const allCursors: any = [];
+          newCollaborators.forEach(
+            (collaborator: { id: string; email: string; avatar: string }) => {
+              if (collaborator.id !== user.id) {
+                const userCursor = quill.getModule("cursors");
+                userCursor.createCursor(
+                  collaborator.id,
+                  collaborator.email.split("@")[0],
+                  `#${Math.random().toString(16).slice(2, 8)}`
+                );
+                allCursors.push(userCursor);
+              }
+            }
+          );
+          setLocalCursors(allCursors);
+        }
+      })
+      .subscribe(async (status) => {
+        if (status !== "SUBSCRIBED" || !user) return;
+        const response = await findUser(user.id);
+        if (!response) return;
+
+        room.track({
+          id: user.id,
+          email: user.email?.split("@")[0],
+          avatarUrl: response.avatarUrl
+            ? supabase.storage.from("avatars").getPublicUrl(response.avatarUrl)
+                .data.publicUrl
+            : "",
+        });
+      });
+    return () => {
+      supabase.removeChannel(room);
+    };
+  }, [fileId, quill, supabase, user]);
   return (
     <>
       <div className="relative">

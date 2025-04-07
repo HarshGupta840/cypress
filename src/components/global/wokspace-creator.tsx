@@ -54,13 +54,20 @@ const WorkspaceCreator = ({}: Props) => {
 
       if (permissions === "private") {
         await createWorkspace(newWorkspace);
-        toast({ title: "Success", description: "Created the workspace" });
+        toast({
+          title: "Success",
+          description: "Created the private workspace",
+        });
         router.refresh();
       }
       if (permissions === "shared") {
         await createWorkspace(newWorkspace);
         await addCollaborators(collaborator, uuid);
-        toast({ title: "Success", description: "Created the workspace" });
+        toast({
+          title: "Success",
+          description: "Created the shared workspace",
+        });
+        router.refresh();
       }
     }
     setIsLoading(false);

@@ -10,7 +10,13 @@ export const config = {
 };
 
 const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
-  if (!res.socket.server.io) {
+  const socketServer = res.socket?.server;
+  if (!socketServer) {
+    res.status(500).end("Socket server is not available.");
+    return;
+  }
+  if (!socketServer.io) {
+    console.log("setting up th socket io");
     const path = "/api/socket/io";
     const httpServer: NetServer = res.socket.server as any;
     const io = new ServerIO(httpServer, {
@@ -18,6 +24,7 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
       addTrailingSlash: false,
     });
     io.on("connection", (s) => {
+      console.log("Client connected", s.id);
       s.on("create-room", (fileId) => {
         s.join(fileId);
       });

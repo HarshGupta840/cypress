@@ -22,18 +22,18 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const socketInstance = new (ClientIO as any)(
-      process.env.NEXT_PUBLIC_SITE_URL!,
-      {
-        path: "/api/socket/io",
-        addTrailingSlash: false,
-      }
-    );
+    console.log("setting the socket", process.env.NEXT_PUBLIC_SITE_URL);
+    const socketInstance = new (ClientIO as any)("http://localhost:3000", {
+      path: "/api/socket/io",
+      addTrailingSlash: false,
+    });
     socketInstance.on("connect", () => {
+      console.log("socket is connected");
       setIsConnected(true);
     });
 
     socketInstance.on("disconnect", () => {
+      console.log("socket s diconected");
       setIsConnected(false);
     });
 

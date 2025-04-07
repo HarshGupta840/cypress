@@ -10,6 +10,8 @@ import { Users, Workspace } from "@/lib/supabase/supabase.types";
 import {
   addCollaborators,
   deleteWorkspace,
+  getCollaborators,
+  removeCollaborators,
   updateWorkspace,
 } from "@/lib/supabase/querries";
 import { v4 } from "uuid";
@@ -30,6 +32,15 @@ import { Alert, AlertDescription } from "../ui/alert";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ScrollArea } from "../ui/scroll-area";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../ui/alert-dialog";
 
 type Props = {};
 
@@ -102,6 +113,60 @@ const Settingforms = ({}: Props) => {
     );
     if (showingWorkspace) setWorkspaceDetails(showingWorkspace);
   }, [workspaceId, state]);
+  //get the collaborators if exists
+
+  useEffect(() => {
+    if (!workspaceId) return;
+    const fetchCollaborators = async () => {
+      const response = await getCollaborators(workspaceId);
+      if (response.length) {
+        setPermissions("shared");
+        setCollaborators(response);
+      }
+    };
+    fetchCollaborators();
+  }, [workspaceId]);
+
+  //when the user chamges the permissions
+  const onPermissionsChange = (val: string) => {
+    if (val === "private") {
+      setOpenAlertMessage(true);
+    } else setPermissions(val);
+  };
+
+  //to add the collaborators
+  const addCollaborator = async (profile: Users) => {
+    if (!workspaceId) return;
+    if (subscription?.status !== "active" && collaborators.length >= 2) {
+      // setOpen(true);
+      return;
+    }
+    await addCollaborators([profile], workspaceId);
+    setCollaborators([...collaborators, profile]);
+  };
+
+  //to remove the collaborators
+  const removeCollaborator = async (user: Users) => {
+    if (!workspaceId) return;
+    if (collaborators.length === 1) {
+      setPermissions("private");
+    }
+    await removeCollaborators([user], workspaceId);
+    setCollaborators(
+      collaborators.filter((collaborator) => collaborator.id !== user.id)
+    );
+    router.refresh();
+  };
+
+  //alert message to change the wortspace type
+  const onClickAlertConfirm = async () => {
+    if (!workspaceId) return;
+    if (collaborators.length > 0) {
+      await removeCollaborators(collaborators, workspaceId);
+    }
+    setPermissions("private");
+    setOpenAlertMessage(false);
+  };
   return (
     <>
       <div className="flex gap-4 flex-col">
@@ -145,10 +210,7 @@ const Settingforms = ({}: Props) => {
         </div>
         <>
           <Label htmlFor="permissions">Permissions</Label>
-          <Select
-            // onValueChange={onPermissionsChange}
-            value={permissions}
-          >
+          <Select onValueChange={onPermissionsChange} value={permissions}>
             <SelectTrigger className="w-full h-26 -mt-3">
               <SelectValue />
             </SelectTrigger>
@@ -191,7 +253,7 @@ const Settingforms = ({}: Props) => {
               <CollaboratorSearch
                 existingCollaborators={collaborators}
                 getCollaborator={(user) => {
-                  // addCollaborators(user);
+                  addCollaborator(user);
                 }}
               >
                 <Button type="button" className="text-sm mt-4">
@@ -241,7 +303,7 @@ const Settingforms = ({}: Props) => {
                         </div>
                         <Button
                           variant="secondary"
-                          // onClick={() => removeCollaborator(c)}
+                          onClick={() => removeCollaborator(c)}
                         >
                           Remove
                         </Button>
@@ -368,25 +430,25 @@ const Settingforms = ({}: Props) => {
           </div>
         )} */}
         </>
-        {/* <AlertDialog open={openAlertMessage}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDescription>
-              Changing a Shared workspace to a Private workspace will remove all
-              collaborators permanantly.
-            </AlertDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setOpenAlertMessage(false)}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={onClickAlertConfirm}>
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog> */}
+        <AlertDialog open={openAlertMessage}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDescription>
+                Changing a Shared workspace to a Private workspace will remove
+                all collaborators permanantly.
+              </AlertDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setOpenAlertMessage(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={onClickAlertConfirm}>
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </>
   );
