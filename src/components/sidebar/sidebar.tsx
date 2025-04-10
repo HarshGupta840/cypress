@@ -15,6 +15,7 @@ import PlanUsage from "./plan-usage";
 import NativeNavigation from "./native-navigation";
 import { ScrollArea } from "../ui/scroll-area";
 import FolderDropDown from "./folder-dropdown-list";
+import UserCard from "./usercard";
 
 type Props = {
   params: { workspaceId: string };
@@ -56,7 +57,7 @@ const Sidebar = async ({ params, className }: Props) => {
         )}
       >
         {" "}
-        <div className="flex flex-col gap-4">
+        <div className="">
           <WorkspaceDropdown
             collaboratingWokspace={collaboratingWorkspaces}
             sharedWorkspace={sharedWorkspaces}
@@ -93,6 +94,7 @@ const Sidebar = async ({ params, className }: Props) => {
             />
           </ScrollArea>
         </div>
+        <UserCard subscription={subscriptionData} />
       </aside>
     </>
   );

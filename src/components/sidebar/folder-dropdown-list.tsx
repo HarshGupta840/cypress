@@ -10,6 +10,7 @@ import { PlusIcon } from "lucide-react";
 import TooltipComponent from "../global/tooltip-component";
 import { Accordion } from "../ui/accordion";
 import Dropdown from "./dropdown";
+import useSupabaseRealtime from "@/lib/hooks/useSupabaserealtime";
 
 type Props = {
   workspaceFolders: Folders[];
@@ -17,6 +18,7 @@ type Props = {
 };
 
 const FolderDropDown = ({ workspaceFolders, workspaceId }: Props) => {
+  useSupabaseRealtime();
   const { subscription } = useSupabaseUser();
   const { state, dispatch, folderId } = useAppState();
   const { toast } = useToast();

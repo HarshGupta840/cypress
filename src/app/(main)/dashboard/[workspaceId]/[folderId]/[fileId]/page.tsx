@@ -1,4 +1,3 @@
-export const dynamic = "force-dyncamic";
 import Editor from "@/components/quill-editor/quill-editor";
 import { getFileDetails, getFolderDetails } from "@/lib/supabase/querries";
 import { redirect } from "next/navigation";

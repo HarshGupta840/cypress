@@ -49,7 +49,7 @@ var TOOLBAR_OPTIONS = [
   ["bold", "italic", "underline", "strike"], // toggled buttons
   ["blockquote", "code-block"],
 
-  [{ header: 1 }, { header: 2 }], // custom button values
+  [{ header: 1 }, { header: 2 }, "blockquote", "code-block"], // custom button values
   [{ list: "ordered" }, { list: "bullet" }],
   [{ script: "sub" }, { script: "super" }], // superscript/subscript
   [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
@@ -59,8 +59,11 @@ var TOOLBAR_OPTIONS = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
 
   [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-  [{ font: [] }],
+  [{ font: [] }, { size: [] }],
   [{ align: [] }],
+  [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+  [{ direction: "rtl" }, { align: [] }],
+  ["link", "image", "video", "formula"],
 
   ["clean"], // remove formatting button
 ];
@@ -126,6 +129,7 @@ const Editor = ({ dirDetails, dirType, fileId }: Props) => {
       Quill.register("modules/cursors", QuillCursors);
       const q = new Quill(editor, {
         theme: "snow",
+
         modules: {
           toolbar: TOOLBAR_OPTIONS,
           cursors: {
@@ -425,6 +429,26 @@ const Editor = ({ dirDetails, dirType, fileId }: Props) => {
     };
   }, [quill, socket, fileId, user, details, folderId, workspaceId, dispatch]);
 
+  //to listen to the cursor event
+  useEffect(() => {
+    if (quill === null || socket === null || !fileId || !localCursors.length)
+      return;
+    const socketHandler = (range: any, roomId: string, cursorId: string) => {
+      if (roomId === fileId) {
+        const cursorToMove = localCursors.find(
+          (c: any) => c.cursors()?.[0].id === cursorId
+        );
+        if (cursorToMove) {
+          cursorToMove.moveCursor(cursorId, range);
+        }
+      }
+    };
+    socket.on("receive-cursor-move", socketHandler);
+    return () => {
+      socket.off("receive-cursor-move", socketHandler);
+    };
+  }, [quill, socket, fileId, localCursors]);
+
   useEffect(() => {
     if (quill === null || socket === null) return;
     const socketHandler = (deltas: any, id: string) => {
@@ -716,7 +740,7 @@ const Editor = ({ dirDetails, dirType, fileId }: Props) => {
             {dirType.toUpperCase()}
           </span>
         </div>
-        <div id="container" className="max-w-[800px]" ref={wrapperRef}></div>
+        <div id="container" className="max-w-[950px]" ref={wrapperRef}></div>
       </div>
     </>
   );

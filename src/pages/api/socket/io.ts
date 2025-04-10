@@ -10,7 +10,7 @@ export const config = {
 };
 
 const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
-  const socketServer = res.socket?.server;
+  const socketServer = res?.socket?.server;
   if (!socketServer) {
     res.status(500).end("Socket server is not available.");
     return;
