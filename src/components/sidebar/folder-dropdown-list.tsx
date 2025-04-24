@@ -11,6 +11,7 @@ import TooltipComponent from "../global/tooltip-component";
 import { Accordion } from "../ui/accordion";
 import Dropdown from "./dropdown";
 import useSupabaseRealtime from "@/lib/hooks/useSupabaserealtime";
+import { useSubscriptionModal } from "@/lib/provider/subscription-modal-providor";
 
 type Props = {
   workspaceFolders: Folders[];
@@ -19,6 +20,7 @@ type Props = {
 
 const FolderDropDown = ({ workspaceFolders, workspaceId }: Props) => {
   useSupabaseRealtime();
+  const { open, setOpen } = useSubscriptionModal();
   const { subscription } = useSupabaseUser();
   const { state, dispatch, folderId } = useAppState();
   const { toast } = useToast();
@@ -50,7 +52,7 @@ const FolderDropDown = ({ workspaceFolders, workspaceId }: Props) => {
   //   add folder
   const addFolderHandler = async () => {
     if (folders.length >= 3 && !subscription) {
-      //   setOpen(true);
+      setOpen(true);
       return;
     }
     const newFolder: Folders = {

@@ -15,7 +15,16 @@ import {
   updateWorkspace,
 } from "@/lib/supabase/querries";
 import { v4 } from "uuid";
-import { Briefcase, Lock, Plus, Share, UserIcon } from "lucide-react";
+import {
+  Briefcase,
+  CreditCard,
+  ExternalLink,
+  Lock,
+  LogOut,
+  Plus,
+  Share,
+  UserIcon,
+} from "lucide-react";
 import { Separator } from "@radix-ui/react-select";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
@@ -41,13 +50,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
+import LogoutButton from "../global/logoutbutton";
+import Link from "next/link";
+import { useSubscriptionModal } from "@/lib/provider/subscription-modal-providor";
 
 type Props = {};
 
 const Settingforms = ({}: Props) => {
   const { toast } = useToast();
   const { user, subscription } = useSupabaseUser();
-  //   const { open, setOpen } = useSubscriptionModal();
+  const { open, setOpen } = useSubscriptionModal();
   const router = useRouter();
   const supabase = createClientComponentClient();
   const { state, workspaceId, dispatch } = useAppState();
@@ -383,52 +395,52 @@ const Settingforms = ({}: Props) => {
               />
             </div>
           </div>
-          {/* <LogoutButton>
-          <div className="flex items-center">
-            <LogOut />
-          </div>
-        </LogoutButton>
-        <p className="flex items-center gap-2 mt-6">
-          <CreditCard size={20} /> Billing & Plan
-        </p>
-        <Separator />
-        <p className="text-muted-foreground">
-          You are currently on a{' '}
-          {subscription?.status === 'active' ? 'Pro' : 'Free'} Plan
-        </p>
-        <Link
-          href="/"
-          target="_blank"
-          className="text-muted-foreground flex flex-row items-center gap-2"
-        >
-          View Plans <ExternalLink size={16} />
-        </Link>
-        {subscription?.status === 'active' ? (
-          <div>
-            <Button
-              type="button"
-              size="sm"
-              variant={'secondary'}
-              disabled={loadingPortal}
-              className="text-sm"
-              onClick={redirectToCustomerPortal}
-            >
-              Manage Subscription
-            </Button>
-          </div>
-        ) : (
-          <div>
-            <Button
-              type="button"
-              size="sm"
-              variant={'secondary'}
-              className="text-sm"
-              onClick={() => setOpen(true)}
-            >
-              Start Plan
-            </Button>
-          </div>
-        )} */}
+          <LogoutButton>
+            <div className="flex items-center">
+              <LogOut />
+            </div>
+          </LogoutButton>
+          <p className="flex items-center gap-2 mt-6">
+            <CreditCard size={20} /> Billing & Plan
+          </p>
+          <Separator />
+          <p className="text-muted-foreground">
+            You are currently on a{" "}
+            {subscription?.status === "active" ? "Pro" : "Free"} Plan
+          </p>
+          <Link
+            href="/"
+            target="_blank"
+            className="text-muted-foreground flex flex-row items-center gap-2"
+          >
+            View Plans <ExternalLink size={16} />
+          </Link>
+          {subscription?.status === "active" ? (
+            <div>
+              <Button
+                type="button"
+                size="sm"
+                variant={"secondary"}
+                disabled={loadingPortal}
+                className="text-sm"
+                // onClick={redirectToCustomerPortal}
+              >
+                Manage Subscription
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <Button
+                type="button"
+                size="sm"
+                variant={"secondary"}
+                className="text-sm"
+                onClick={() => setOpen(true)}
+              >
+                Start Plan
+              </Button>
+            </div>
+          )}
         </>
         <AlertDialog open={openAlertMessage}>
           <AlertDialogContent>
