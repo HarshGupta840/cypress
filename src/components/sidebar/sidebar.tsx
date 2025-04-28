@@ -34,7 +34,7 @@ const Sidebar = async ({ params, className }: Props) => {
   //subscr
   const { data: subscriptionData, error: subscriptionError } =
     await getUserSubscriptionStatus(user.id);
-
+  console.log("subs data is", subscriptionData, user.id);
   //folders
   const { data: workspaceFolderData, error: foldersError } = await getFolder(
     params.workspaceId

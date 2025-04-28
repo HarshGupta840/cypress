@@ -6,6 +6,7 @@ import HomeIcon from "../icons/homeicon";
 import SettingsIcon from "../icons/settingicons";
 import TrashIcon from "../icons/trashicon";
 import Settings from "../setting/setting";
+import Trash from "../trash/trash";
 
 type Props = {
   myWorkspaceId: string;
@@ -45,17 +46,20 @@ const NativeNavigation = ({ myWorkspaceId, className }: Props) => {
               <span>Settings</span>
             </li>
           </Settings>
-          <li
-            className="group/native
+          <Trash>
+            <li
+              className="group/native
             flex
             text-Neutrals/neutrals-7
             transition-all
             gap-2
+            cursor-pointer
           "
-          >
-            <TrashIcon />
-            <span>Trash</span>
-          </li>
+            >
+              <TrashIcon />
+              <span>Trash</span>
+            </li>
+          </Trash>
         </ul>
       </nav>
     </>

@@ -47,6 +47,10 @@ type Action =
       payload: { workspaceId: string; files: Files[]; folderId: string };
     }
   | {
+      type: "UPDATE_USER";
+      payload: { userId: string; avatar_url: string };
+    }
+  | {
       type: "UPDATE_FILES";
       payload: {
         workspaceId: string;

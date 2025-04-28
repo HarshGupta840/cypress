@@ -14,7 +14,7 @@ import { z } from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormSchema } from "@/lib/types";
+import { FormSchema, SignupFormSchema } from "@/lib/types";
 import { actionSignUpUser } from "@/lib/server-action/auth-action";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,7 @@ import Loader from "@/components/global/Loader";
 import clsx from "clsx";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { MailCheck } from "lucide-react";
+import { Label } from "@/components/ui/label";
 type Props = {};
 
 const SignupForm = z
@@ -35,6 +36,8 @@ const SignupForm = z
       .string()
       .describe("Confirm Password")
       .min(6, "Password must be minimum 6 characters"),
+    fullName: z.string().min(1, "Full name is required"),
+    avatar: z.any().optional(),
   })
   .refine(
     (data) => data.password === data.confirmPassword,
@@ -49,7 +52,13 @@ const Signup = ({}: Props) => {
   const form = useForm<z.infer<typeof SignupForm>>({
     mode: "onChange",
     resolver: zodResolver(SignupForm),
-    defaultValues: { email: "", password: "", confirmPassword: "" },
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+      fullName: "",
+      avatar: "",
+    },
   });
   const isLoading = form.formState.isSubmitting;
 
@@ -65,9 +74,17 @@ const Signup = ({}: Props) => {
       "text-red-700": codeExchangeError,
     });
   }, [codeExchangeError]);
-  const onSubmit = async ({ email, password }: z.infer<typeof FormSchema>) => {
+  const onSubmit = async ({
+    email,
+    password,
+    fullName,
+  }: z.infer<typeof SignupFormSchema>) => {
     console.log("calling the onsumbit fuction function");
-    const { error } = await actionSignUpUser({ email, password });
+    const { error } = await actionSignUpUser({
+      email,
+      password,
+      fullName,
+    });
     if (error) {
       setSubmitError(error.message);
       form.reset();
@@ -121,6 +138,19 @@ const Signup = ({}: Props) => {
               <FormItem>
                 <FormControl>
                   <Input type="email" placeholder="Email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          ></FormField>
+          <FormField
+            disabled={isLoading}
+            control={form.control}
+            name="fullName"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input type="text" placeholder="Full Name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -25,23 +25,31 @@ const PlanUsage = ({ foldersLength, subscription }: Props) => {
 
   return (
     <>
-      <article className="mt-4">
-        <div
-          className="flex 
-          justify-center
+      <article className="mb-4">
+        {subscription?.status !== "active" && (
+          <div
+            className="flex 
           gap-2
           text-muted-foreground
           mb-2
-          items-center"
-        >
-          <div className="h-4 w-4">
-            <DiamondIcon />{" "}
+          items-center
+        "
+          >
+            <div className="h-4 w-4">
+              <DiamondIcon />
+            </div>
+            <div
+              className="flex 
+        justify-between 
+        w-full 
+        items-center
+        "
+            >
+              <div>Free Plan</div>
+              <small>{usagePercentage.toFixed(0)}% / 100%</small>
+            </div>
           </div>
-          <div className="flex justify-between items-center w-full">
-            <div>Free Plan</div>
-            <small>{usagePercentage.toFixed(0)}%/100%</small>
-          </div>
-        </div>
+        )}
         {subscription?.status !== "active" && (
           <Progress value={usagePercentage} className="h-1" />
         )}

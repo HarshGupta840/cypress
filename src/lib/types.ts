@@ -7,6 +7,11 @@ export const FormSchema = z.object({
   email: z.string().email("Invalid Email").describe("Email"),
   password: z.string().min(1, "password is required").describe("Password"),
 });
+export const SignupFormSchema = z.object({
+  email: z.string().email("Invalid Email").describe("Email"),
+  password: z.string().min(1, "password is required").describe("Password"),
+  fullName: z.string().min(1, "Full name is required"),
+});
 
 export const createWorkspaceFormSchema = z.object({
   workspaceName: z

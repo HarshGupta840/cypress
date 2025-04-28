@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   PgTable,
   boolean,
@@ -9,7 +9,12 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { prices, subscriptionStatus, users } from "../../../mirgation/schema";
+import {
+  prices,
+  products,
+  subscriptionStatus,
+  users,
+} from "../../../mirgation/schema";
 
 export const workspace = pgTable("workspaces", {
   id: uuid("id").unique().notNull().primaryKey().defaultRandom(),
@@ -136,3 +141,14 @@ export const collaborator = pgTable("collaborators", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
 });
+
+export const productsRelations = relations(products, ({ many }) => ({
+  prices: many(prices),
+}));
+
+export const pricesRelations = relations(prices, ({ one }) => ({
+  product: one(products, {
+    fields: [prices.productId],
+    references: [products.id],
+  }),
+}));

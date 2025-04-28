@@ -47,6 +47,7 @@ const BannerUploadForm: React.FC<BannerUploadFormProps> = ({ dirType, id }) => {
 
       const uploadBanner = async () => {
         const newid = v4();
+        console.log("banner is ", values.banner);
         const { data, error } = await supabase.storage
           .from("file-banners")
           .upload(`banner-${newid}`, file, { cacheControl: "5", upsert: true });

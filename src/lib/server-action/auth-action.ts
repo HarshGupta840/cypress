@@ -1,9 +1,10 @@
 "use server";
 import { z } from "zod";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { FormSchema } from "../types";
+import { FormSchema, SignupFormSchema } from "../types";
 import { cookies } from "next/headers";
 import { error } from "console";
+import { v4 } from "uuid";
 
 export async function actionLoginUser({
   email,
@@ -35,7 +36,8 @@ export async function actionLoginUser({
 export async function actionSignUpUser({
   email,
   password,
-}: z.infer<typeof FormSchema>) {
+  fullName,
+}: z.infer<typeof SignupFormSchema>) {
   const supabase = createRouteHandlerClient({ cookies });
   const { data } = await supabase
     .from("profiles")
@@ -49,8 +51,12 @@ export async function actionSignUpUser({
   const response = await supabase.auth.signUp({
     email,
     password,
+
     options: {
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}api/auth/callback`,
+      data: {
+        full_name: fullName,
+      },
     },
   });
   console.log(response, "here success");

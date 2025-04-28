@@ -19,6 +19,7 @@ import { collaborator } from "./schema";
 import { validate } from "uuid";
 import { error } from "console";
 import { revalidatePath } from "next/cache";
+import { User } from "@supabase/supabase-js";
 
 export const createWorkspace = async (workspace: Workspace) => {
   try {
@@ -259,6 +260,7 @@ export const updateFile = async (file: Partial<Files>, fileId: string) => {
     return { data: null, error: "Error" };
   }
 };
+// export const updateUser
 export const updateWorkspace = async (
   workspace: Partial<Workspace>,
   workspaceId: string
@@ -341,13 +343,26 @@ export const findUser = async (userId: string) => {
   });
   return response;
 };
+export const updataUser = async (userId: string, data: any) => {
+  console.log("update user is called", data, userId);
+  if (!userId) return;
+  try {
+    await db.update(users).set(data).where(eq(users.id, userId));
+    return { data: null, error: null };
+  } catch (error) {
+    console.log("error is", error);
+    return { data: null, error: "Error" };
+  }
+  return;
+};
+
 export const getActiveProductsWithPrice = async () => {
   try {
     const res = await db.query.products.findMany({
       where: (pro, { eq }) => eq(pro.active, true),
       with: {
         prices: {
-          where: (pric: any, { eq }) => eq(pric.active, true),
+          where: (pric, { eq }) => eq(pric.active, true),
         },
       },
     });

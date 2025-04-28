@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import styles from "./styles.module.css";
 import { useToast } from "@/components/ui/use-toast";
 import { useSupabaseUser } from "@/lib/provider/supabase-user-provider";
 import { useRouter } from "next/navigation";
@@ -10,8 +9,10 @@ import { Users, Workspace } from "@/lib/supabase/supabase.types";
 import {
   addCollaborators,
   deleteWorkspace,
+  findUser,
   getCollaborators,
   removeCollaborators,
+  updataUser,
   updateWorkspace,
 } from "@/lib/supabase/querries";
 import { v4 } from "uuid";
@@ -53,12 +54,16 @@ import {
 import LogoutButton from "../global/logoutbutton";
 import Link from "next/link";
 import { useSubscriptionModal } from "@/lib/provider/subscription-modal-providor";
+import { postData } from "@/lib/utils";
+import db from "@/lib/supabase/db";
 
 type Props = {};
 
 const Settingforms = ({}: Props) => {
   const { toast } = useToast();
   const { user, subscription } = useSupabaseUser();
+  const [active, setactive] = useState<Users | null>(null);
+  console.log(user);
   const { open, setOpen } = useSubscriptionModal();
   const router = useRouter();
   const supabase = createClientComponentClient();
@@ -73,7 +78,19 @@ const Settingforms = ({}: Props) => {
   const [loadingPortal, setLoadingPortal] = useState(false);
 
   //wip payment portal
-
+  const redirectToCustomerPortal = async () => {
+    setLoadingPortal(true);
+    try {
+      const { url, error } = await postData({
+        url: "/api/create-portal-link",
+      });
+      window.location.assign(url);
+    } catch (error) {
+      console.log(error);
+      setLoadingPortal(false);
+    }
+    setLoadingPortal(false);
+  };
   //add collaborator
   //remove colaborator
   //on change workspace title
@@ -92,6 +109,7 @@ const Settingforms = ({}: Props) => {
   const onChangeWorkspaceLogo = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    console.log("workspace logo change");
     if (!workspaceId) return;
     const file = e.target.files?.[0];
     if (!file) return;
@@ -112,6 +130,33 @@ const Settingforms = ({}: Props) => {
       await updateWorkspace({ logo: data.path }, workspaceId);
       setUploadingLogo(false);
     }
+  };
+  const onChangeProfilePicture = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    console.log("proflie change");
+    if (!user) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const uuid = v4();
+    setUploadingLogo(true);
+    const { data, error } = await supabase.storage
+      .from("avatars")
+      .upload(`avatar.${uuid}`, file, {
+        cacheControl: "3600",
+        upsert: true,
+      });
+    const path = data?.path;
+    const datas = {
+      avatarUrl: path,
+    };
+    if (data) {
+      await updataUser(user?.id, datas);
+
+      router.refresh();
+      getdata();
+    }
+    return;
   };
   //on clicks
   //fetchin gavatar details
@@ -139,6 +184,30 @@ const Settingforms = ({}: Props) => {
     fetchCollaborators();
   }, [workspaceId]);
 
+  const getdata = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+    const response = await findUser(user.id);
+    let avatarPath;
+    if (!response) return;
+    if (!response.avatarUrl) avatarPath = "";
+    else {
+      avatarPath = supabase.storage
+        .from("avatars")
+        .getPublicUrl(response.avatarUrl)?.data.publicUrl;
+    }
+    const profile = {
+      ...response,
+      avatarUrl: avatarPath,
+    };
+    setactive(profile);
+  };
+  useEffect(() => {
+    getdata();
+  }, []);
+
   //when the user chamges the permissions
   const onPermissionsChange = (val: string) => {
     if (val === "private") {
@@ -150,7 +219,7 @@ const Settingforms = ({}: Props) => {
   const addCollaborator = async (profile: Users) => {
     if (!workspaceId) return;
     if (subscription?.status !== "active" && collaborators.length >= 2) {
-      // setOpen(true);
+      setOpen(true);
       return;
     }
     await addCollaborators([profile], workspaceId);
@@ -179,6 +248,7 @@ const Settingforms = ({}: Props) => {
     setPermissions("private");
     setOpenAlertMessage(false);
   };
+
   return (
     <>
       <div className="flex gap-4 flex-col">
@@ -372,7 +442,9 @@ const Settingforms = ({}: Props) => {
           <Separator />
           <div className="flex items-center">
             <Avatar>
-              <AvatarImage src={""} />
+              <AvatarImage
+                src={active?.avatarUrl != null ? active?.avatarUrl : ""}
+              />
               <AvatarFallback>{/* <CypressProfileIcon /> */}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col ml-6">
@@ -390,7 +462,7 @@ const Settingforms = ({}: Props) => {
                 type="file"
                 accept="image/*"
                 placeholder="Profile Picture"
-                // onChange={onChangeProfilePicture}
+                onChange={onChangeProfilePicture}
                 disabled={uploadingProfilePic}
               />
             </div>
@@ -423,7 +495,7 @@ const Settingforms = ({}: Props) => {
                 variant={"secondary"}
                 disabled={loadingPortal}
                 className="text-sm"
-                // onClick={redirectToCustomerPortal}
+                onClick={redirectToCustomerPortal}
               >
                 Manage Subscription
               </Button>
