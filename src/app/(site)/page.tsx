@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import styles from "./styles.module.css";
 import TitleSection from "@/components/landing-page/titile-section";
@@ -11,9 +12,17 @@ import clsx from "clsx";
 import CustomCard from "@/components/landing-page/card-component";
 import { CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 type Props = {};
 
 const Homepage = ({}: Props) => {
+  const rouer = useRouter();
+  const getFree = () => {
+    console.log("cliecked on pafe");
+    rouer.push("/login");
+    return;
+  };
   return (
     <>
       <section
@@ -37,17 +46,20 @@ const Homepage = ({}: Props) => {
           mt-6
           rounded-xl
           from-primary
-          to-brand-primaryBlue sm:w-[300px]"
+          to-brand-primaryBlue sm:w-[300px] z-[1000]"
         >
-          <Button
-            variant={"secondary"}
-            className="w-full rounded-[10px]
+          <Link href={"/login"} className="cursor-pointer z-[1000]">
+            <Button
+              variant={"secondary"}
+              className="w-full rounded-[10px]
             p-6
             text-2xl
-            bg-background"
-          >
-            Get Cypress Free
-          </Button>
+            bg-background
+            cursor-pointer"
+            >
+              Get TypeSync Frees
+            </Button>
+          </Link>
         </div>
 
         <div className="md:mt-[-90px] relative sm:ml-0 flex justify-center items-center w-full sm-w-[750px]">
@@ -171,7 +183,7 @@ const Homepage = ({}: Props) => {
         </div>
       </section>
 
-      <section className="relative">
+      <section id="testimonial" className="relative">
         <div
           className="w-full
           blur-[120px]
@@ -240,7 +252,7 @@ const Homepage = ({}: Props) => {
         </div>
       </section>
 
-      <section className="mt-10 px-4 md:px6">
+      <section id="plan" className="mt-10 px-4 md:px6">
         <TitleSection
           title="The Perfect Plan For You"
           subheading="Experience all the benefits of our platform. Select a plan that suits your needs and take your productivity to new heights."
@@ -306,14 +318,16 @@ const Homepage = ({}: Props) => {
                   <p className="dark:text-washed-purple-800">
                     {cards.description}
                   </p>
-                  <Button
-                    variant="outline"
-                    className="whitespace-nowrap w-full mt-4"
-                  >
-                    {cards.planType === PRICING_PLANS.proplan
-                      ? "Go Pro"
-                      : "Get Started"}
-                  </Button>
+                  <Link href={"/signup"}>
+                    <Button
+                      variant="outline"
+                      className="whitespace-nowrap w-full mt-4"
+                    >
+                      {cards.planType === PRICING_PLANS.proplan
+                        ? "Go Pro"
+                        : "Get Started"}
+                    </Button>
+                  </Link>
                 </CardContent>
               }
               cardFooter={

@@ -88,7 +88,7 @@ const Header = ({}: Props) => {
           dark:text-white
         "
           >
-            cypress.
+            TypeSync
           </span>
         </Link>
         <NavigationMenu className="hidden md:block">
